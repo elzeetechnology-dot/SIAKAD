@@ -7,7 +7,14 @@ const menus = [
   { label: 'Dashboard', to: '/admin' },
   { label: 'Data Siswa', to: '/admin/siswa' },
   { label: 'Data Guru', to: '/admin/guru' },
-  { label: 'Mata Pelajaran', to: '/admin/mapel' }
+  { label: 'Mata Pelajaran', to: '/admin/mapel' },
+  { label: 'Kelas', to: '/admin/kelas' },
+  { label: 'Absensi', to: '/admin/absensi' },
+  { label: 'Rapor', to: '/admin/rapor' },
+  { label: 'Jadwal', to: '/admin/jadwal' },
+  { label: 'Wali Kelas', to: '/admin/wali-kelas' },
+  { label: 'Pengumuman', to: '/admin/pengumuman' },
+
 ]
 
 const logout = async () => {

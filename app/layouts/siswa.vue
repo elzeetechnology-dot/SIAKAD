@@ -6,7 +6,9 @@ const auth = useAuthStore()
 const menus = [
   { label: 'Dashboard', to: '/siswa' },
   { label: 'Jadwal Pelajaran', to: '/siswa/jadwal' },
-  { label: 'Nilai Rapor', to: '/siswa/nilai' }
+  { label: 'Nilai Rapor', to: '/siswa/nilai' },
+    { label: 'Absensi', to: '/siswa/absensi' },
+  { label: 'Pengumuman', to: '/siswa/pengumuman' }
 ]
 
 const logout = async () => {

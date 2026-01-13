@@ -4,8 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 
 definePageMeta({
-  layout: 'admin',
-  middleware: ['auth']
+  layout: 'admin'
 })
 
 const auth = useAuthStore()
@@ -17,70 +16,53 @@ onMounted(() => {
   }
 })
 
-type Guru = {
+/* =====================
+   TYPE
+===================== */
+type Pengumuman = {
   id: number
-  nip: string
-  nama: string
-  mapel: string
-  status: 'Aktif' | 'Nonaktif'
+  judul: string
+  target: 'Semua' | 'Guru' | 'Siswa'
+  tanggal: string
+  status: 'Draft' | 'Publish'
 }
 
-type Kelas = {
-  id: number
-  nama: string
-  wali_id: number | null
-}
-
-
-const guruList = ref<Guru[]>([
+/* =====================
+   DATA DEMO
+===================== */
+const pengumumanList = ref<Pengumuman[]>([
   {
     id: 1,
-    nip: '198701012010011001',
-    nama: 'Drs. Hendra Wijaya',
-    mapel: 'Matematika',
-    status: 'Aktif'
+    judul: 'Libur Nasional Hari Raya',
+    target: 'Semua',
+    tanggal: '2026-01-10',
+    status: 'Publish'
   },
   {
     id: 2,
-    nip: '198905122012021002',
-    nama: 'Siti Rahmawati, S.Pd',
-    mapel: 'Bahasa Indonesia',
-    status: 'Aktif'
+    judul: 'Rapat Guru Semester Genap',
+    target: 'Guru',
+    tanggal: '2026-01-12',
+    status: 'Publish'
   },
   {
     id: 3,
-    nip: '197812302008011003',
-    nama: 'Ahmad Zainal, S.Pd',
-    mapel: 'Sejarah',
-    status: 'Nonaktif'
+    judul: 'Pengambilan Rapor Semester Ganjil',
+    target: 'Siswa',
+    tanggal: '2026-01-15',
+    status: 'Draft'
   }
 ])
 
-const kelasList = ref([
-  { id: 1, nama: 'X IPA 1', wali_id: 1 },
-  { id: 2, nama: 'X IPA 2', wali_id: null },
-  { id: 3, nama: 'XI IPS 1', wali_id: 3 }
-])
-
-const waliIds = computed(() =>
-  kelasList.value
-    .filter(k => k.wali_id !== null)
-    .map(k => k.wali_id)
+/* =====================
+   COMPUTED
+===================== */
+const total = computed(() => pengumumanList.value.length)
+const published = computed(
+  () => pengumumanList.value.filter(p => p.status === 'Publish').length
 )
-
-
-const keyword = ref('')
-
-const filteredGuru = computed(() =>
-  guruList.value.filter(g =>
-    g.nama.toLowerCase().includes(keyword.value.toLowerCase()) ||
-    g.nip.includes(keyword.value)
-  )
-)
-
-const totalGuru = computed(() => guruList.value.length)
-const guruAktif = computed(
-  () => guruList.value.filter(g => g.status === 'Aktif').length
+const draft = computed(
+  () => pengumumanList.value.filter(p => p.status === 'Draft').length
 )
 </script>
 
@@ -89,38 +71,28 @@ const guruAktif = computed(
     <!-- HEADER -->
     <div class="page-header">
       <div>
-        <h1>Data Guru</h1>
-        <p class="subtitle">Daftar guru aktif dan nonaktif</p>
+        <h1>Pengumuman</h1>
+        <p class="subtitle">Kelola pengumuman sekolah</p>
       </div>
-
-      <button class="btn-primary">+ Tambah Guru</button>
+      <button class="btn-primary">+ Buat Pengumuman</button>
     </div>
 
-    <!-- SUMMARY CARDS -->
+    <!-- SUMMARY -->
     <div class="stats">
       <div class="card">
-        <h3>Total Guru</h3>
-        <p>{{ totalGuru }}</p>
+        <h3>Total</h3>
+        <p>{{ total }}</p>
       </div>
 
       <div class="card green">
-        <h3>Guru Aktif</h3>
-        <p>{{ guruAktif }}</p>
+        <h3>Dipublish</h3>
+        <p>{{ published }}</p>
       </div>
 
-      <div class="card red">
-        <h3>Nonaktif</h3>
-        <p>{{ totalGuru - guruAktif }}</p>
+      <div class="card yellow">
+        <h3>Draft</h3>
+        <p>{{ draft }}</p>
       </div>
-    </div>
-
-    <!-- SEARCH -->
-    <div class="toolbar">
-      <input
-        v-model="keyword"
-        type="text"
-        placeholder="Cari nama / NIP guru..."
-      />
     </div>
 
     <!-- TABLE -->
@@ -129,9 +101,9 @@ const guruAktif = computed(
         <thead>
           <tr>
             <th>No</th>
-            <th>NIP</th>
-            <th>Nama Guru</th>
-            <th>Mata Pelajaran</th>
+            <th>Judul</th>
+            <th>Target</th>
+            <th>Tanggal</th>
             <th>Status</th>
             <th>Aksi</th>
           </tr>
@@ -139,23 +111,25 @@ const guruAktif = computed(
 
         <tbody>
           <tr
-            v-for="(guru, index) in filteredGuru"
-            :key="guru.id"
+            v-for="(item, index) in pengumumanList"
+            :key="item.id"
           >
             <td>{{ index + 1 }}</td>
-            <td>{{ guru.nip }}</td>
-            <td class="name">{{ guru.nama }}</td>
-            <td>{{ guru.mapel }}</td>
+            <td class="name">{{ item.judul }}</td>
+            <td>
+              <span class="chip">{{ item.target }}</span>
+            </td>
+            <td>{{ item.tanggal }}</td>
             <td>
               <span
                 :class="[
                   'badge',
-                  guru.status === 'Aktif'
+                  item.status === 'Publish'
                     ? 'badge-green'
-                    : 'badge-red'
+                    : 'badge-yellow'
                 ]"
               >
-                {{ guru.status }}
+                {{ item.status }}
               </span>
             </td>
             <td class="aksi">
@@ -167,9 +141,9 @@ const guruAktif = computed(
             </td>
           </tr>
 
-          <tr v-if="filteredGuru.length === 0">
+          <tr v-if="pengumumanList.length === 0">
             <td colspan="6" class="empty">
-              Data guru tidak ditemukan
+              Belum ada pengumuman
             </td>
           </tr>
         </tbody>
@@ -183,7 +157,7 @@ const guruAktif = computed(
   padding: 24px;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -201,7 +175,7 @@ const guruAktif = computed(
   color: #64748b;
 }
 
-/* ===== STATS ===== */
+/* STATS */
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -219,7 +193,6 @@ const guruAktif = computed(
 .card h3 {
   font-size: 13px;
   color: #64748b;
-  margin-bottom: 6px;
 }
 
 .card p {
@@ -231,27 +204,11 @@ const guruAktif = computed(
   color: #16a34a;
 }
 
-.card.red p {
-  color: #dc2626;
+.card.yellow p {
+  color: #ca8a04;
 }
 
-/* ===== TOOLBAR ===== */
-.toolbar {
-  margin-bottom: 14px;
-}
-
-.toolbar input {
-  width: 280px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-}
-
-.toolbar input:focus {
-  border-color: #2563eb;
-}
-
-/* ===== TABLE ===== */
+/* TABLE */
 .table-wrapper {
   background: white;
   border-radius: 14px;
@@ -270,42 +227,18 @@ const guruAktif = computed(
   border-bottom: 1px solid #e5e7eb;
 }
 
-/* HEADER */
 .table th {
   background: #f8fafc;
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
   color: #475569;
 }
 
-/* ===== COLUMN ALIGNMENT (INI YANG BIKIN RAPIH) ===== */
-.table th:nth-child(1),
-.table td:nth-child(1) {
+/* ALIGN */
+.table th:first-child,
+.table td:first-child {
   text-align: center;
   width: 60px;
-}
-
-.table th:nth-child(2),
-.table td:nth-child(2) {
-  width: 200px;
-  font-variant-numeric: tabular-nums;
-}
-
-.table th:nth-child(3),
-.table td:nth-child(3) {
-  min-width: 260px;
-}
-
-.table th:nth-child(4),
-.table td:nth-child(4) {
-  min-width: 200px;
-}
-
-.table th:nth-child(5),
-.table td:nth-child(5) {
-  text-align: center;
-  width: 120px;
 }
 
 .table th:last-child,
@@ -314,11 +247,21 @@ const guruAktif = computed(
   width: 200px;
 }
 
-.table tbody tr:hover {
-  background: #f9fafb;
+.name {
+  font-weight: 600;
 }
 
-/* ===== BADGE ===== */
+/* CHIP */
+.chip {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* BADGE */
 .badge {
   padding: 4px 12px;
   border-radius: 999px;
@@ -331,18 +274,19 @@ const guruAktif = computed(
   color: #166534;
 }
 
-.badge-red {
-  background: #fee2e2;
-  color: #991b1b;
+.badge-yellow {
+  background: #fef9c3;
+  color: #854d0e;
 }
 
-/* ===== BUTTON ===== */
+/* BUTTON */
 .btn-primary {
   background: #2563eb;
   color: white;
   padding: 10px 16px;
   border-radius: 10px;
   border: none;
+  cursor: pointer;
 }
 
 .aksi-wrap {
@@ -355,6 +299,8 @@ const guruAktif = computed(
   min-width: 60px;
   padding: 6px 10px;
   border-radius: 8px;
+  border: none;
+  cursor: pointer;
   font-size: 12px;
 }
 
@@ -367,6 +313,7 @@ const guruAktif = computed(
   color: white;
 }
 
+/* EMPTY */
 .empty {
   text-align: center;
   padding: 20px;

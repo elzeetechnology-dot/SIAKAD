@@ -5,7 +5,9 @@ const auth = useAuthStore()
 
 const menus = [
   { label: 'Dashboard', to: '/guru' },
-  { label: 'Input Nilai', to: '/guru/nilai' }
+  { label: 'Input Nilai', to: '/guru/nilai' },
+   { label: 'Absensi', to: '/guru/absensi' },
+  { label: 'Pengumuman', to: '/guru/pengumuman' }
 ]
 
 const logout = async () => {
