@@ -1,4 +1,4 @@
-import type { UserRole } from '../stores/auth'
+import type { UserRole } from '@/stores/auth'
 
 export interface SidebarItem {
   label: string
